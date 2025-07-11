@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
 
+// رابط الـ backend
+const API_BASE = 'https://todo-backend-production.up.railway.app';
+
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [email, setEmail] = useState('');
@@ -25,11 +28,11 @@ function App() {
     e.preventDefault();
     setError('');
     try {
-      const response = await axios.post('http://localhost:5000/api/login', {
+      const response = await axios.post(`${API_BASE}/api/login`, {
         email,
         password
       });
-      
+
       localStorage.setItem('token', response.data.token);
       setIsLoggedIn(true);
       fetchTasks();
@@ -37,10 +40,10 @@ function App() {
       setError('فشل تسجيل الدخول: تأكد من صحة البيانات');
     }
   };
+
   const toggleTaskCompletion = async (taskId, completed) => {
     try {
-      await axios.patch(`http://localhost:5000/api/tasks/${taskId}`, { completed });
-      // نحدث الحالة المحلية
+      await axios.patch(`${API_BASE}/api/tasks/${taskId}`, { completed });
       setTasks(tasks.map(task => 
         task._id === taskId ? { ...task, completed } : task
       ));
@@ -54,11 +57,11 @@ function App() {
     e.preventDefault();
     setError('');
     try {
-      await axios.post('http://localhost:5000/api/register', {
+      await axios.post(`${API_BASE}/api/register`, {
         email,
         password
       });
-      
+
       setError('تم إنشاء الحساب بنجاح. يمكنك تسجيل الدخول الآن.');
       setIsRegistering(false);
     } catch (error) {
@@ -69,7 +72,7 @@ function App() {
   // جلب المهام
   const fetchTasks = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/tasks');
+      const response = await axios.get(`${API_BASE}/api/tasks`);
       setTasks(response.data);
     } catch (error) {
       console.error('فشل جلب المهام:', error);
@@ -79,12 +82,12 @@ function App() {
   // إضافة مهمة
   const addTask = async () => {
     if (!newTask.trim()) return;
-    
+
     try {
-      const response = await axios.post('http://localhost:5000/api/tasks', {
+      const response = await axios.post(`${API_BASE}/api/tasks`, {
         text: newTask
       });
-      
+
       setTasks([...tasks, response.data]);
       setNewTask('');
     } catch (error) {
@@ -95,7 +98,7 @@ function App() {
   // حذف مهمة
   const deleteTask = async (taskId) => {
     try {
-      await axios.delete(`http://localhost:5000/api/tasks/${taskId}`);
+      await axios.delete(`${API_BASE}/api/tasks/${taskId}`);
       setTasks(tasks.filter(task => task._id !== taskId));
     } catch (error) {
       console.error('فشل حذف المهمة:', error);
@@ -166,7 +169,7 @@ function App() {
           <button onClick={handleLogout} className="logout-btn">تسجيل الخروج</button>
         </div>
       </header>
-      
+
       <div className="task-form">
         <input
           type="text"
@@ -177,7 +180,7 @@ function App() {
         />
         <button onClick={addTask} className="add-btn">إضافة</button>
       </div>
-      
+
       {tasks.length === 0 ? (
         <div className="no-tasks">لا توجد مهام حالياً</div>
       ) : (
@@ -186,11 +189,11 @@ function App() {
             <li key={task._id} className={task.completed ? 'completed' : ''}>
               <span>{task.text}</span>
               <div>
-              <button 
-                className="complete-btn"
-                onClick={() => toggleTaskCompletion(task._id, !task.completed)}
-              >
-                {task.completed ? 'إلغاء' : 'إكمال'}
+                <button 
+                  className="complete-btn"
+                  onClick={() => toggleTaskCompletion(task._id, !task.completed)}
+                >
+                  {task.completed ? 'إلغاء' : 'إكمال'}
                 </button>
                 <button 
                   className="delete-btn"
