@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken');
 const app = express();
 
 const corsOptions = {
-  origin: 'https://todo-app1-snowy.vercel.app',
+  origin: 'https://todo-app1-u3qb3voqs-hayels-projects-43a617c8.vercel.app',
   methods: ['GET', 'POST', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 };
